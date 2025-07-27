@@ -1,0 +1,47 @@
+*************************************************
+*                                               *
+*          !!!!! HAVE A GREAT DAY !!!!!         *
+*                                               *
+*************************************************
+THIS DEVICE IS PART OF A PRIVATE NETWORK
+*************************************************
+* Unauthorised access or use of this equipment  *
+* is prohibited and constitutes an offence under*
+* the Computer Misuse Act 1990.                 *
+* This system is being monitored and logs will  *
+* be used as evidence in court.                 *
+* If you are not authorised to use this system, *
+* Terminate this session now!                   *
+*************************************************
+User amishra11 logged in to BLR-LON-LAB-IT-FW
+Logins over the last 90 days: 192.  Last login: 23:05:20 UTC Jul 26 2025 from 10.100.134.40
+Failed logins since the last login: 0.  Last failed login: 07:56:35 UTC Jun 9 2025 from 10.100.134.40
+Type help or '?' for a list of available commands.
+BLR-LON-LAB-IT-FW> 
+BLR-LON-LAB-IT-FW> show curpriv
+Username : amishra11
+Current privilege level : 1
+Current Mode/s : P_UNPR
+BLR-LON-LAB-IT-FW> 
+BLR-LON-LAB-IT-FW> 
+BLR-LON-LAB-IT-FW> enable
+Password: **********
+BLR-LON-LAB-IT-FW# terminal pager 0
+BLR-LON-LAB-IT-FW# 
+BLR-LON-LAB-IT-FW# configure terminal
+BLR-LON-LAB-IT-FW(config)# 
+BLR-LON-LAB-IT-FW(config)# terminal width 511
+BLR-LON-LAB-IT-FW(config)# 
+BLR-LON-LAB-IT-FW(config)# end
+BLR-LON-LAB-IT-FW# 
+BLR-LON-LAB-IT-FW# 
+BLR-LON-LAB-IT-FW# 
+BLR-LON-LAB-IT-FW# 
+BLR-LON-LAB-IT-FW# 
+BLR-LON-LAB-IT-FW# 
+BLR-LON-LAB-IT-FW# 
+BLR-LON-LAB-IT-FW# packet-tracer input outside tcp 10.91.194.0-255.255.255.128 12345 10.191.239.0-255.255.255.0 831
+                                                              ^
+ERROR: % Invalid input detected at '^' marker.
+BLR-LON-LAB-IT-FW# 
+BLR-LON-LAB-IT-FW# exit

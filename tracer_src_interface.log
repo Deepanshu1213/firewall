@@ -1,0 +1,44 @@
+*************************************************
+*                                               *
+*          !!!!! HAVE A GREAT DAY !!!!!         *
+*                                               *
+*************************************************
+THIS DEVICE IS PART OF A PRIVATE NETWORK
+*************************************************
+* Unauthorised access or use of this equipment  *
+* is prohibited and constitutes an offence under*
+* the Computer Misuse Act 1990.                 *
+* This system is being monitored and logs will  *
+* be used as evidence in court.                 *
+* If you are not authorised to use this system, *
+* Terminate this session now!                   *
+*************************************************
+User amishra11 logged in to AMS-EDG-IN-FW02
+Logins over the last 91 days: 991.  Last login: 02:15:34 UTC May 31 2025 from 10.100.134.40
+Failed logins since the last login: 0.  Last failed login: 02:07:58 UTC May 22 2025 from 10.100.134.40
+Type help or '?' for a list of available commands.
+AMS-EDG-IN-FW02/pri/act> 
+AMS-EDG-IN-FW02/pri/act> show curpriv
+Username : amishra11
+Current privilege level : 1
+Current Mode/s : P_UNPR
+AMS-EDG-IN-FW02/pri/act> 
+AMS-EDG-IN-FW02/pri/act> 
+AMS-EDG-IN-FW02/pri/act> enable
+Password: **********
+AMS-EDG-IN-FW02/pri/act# terminal pager 0
+AMS-EDG-IN-FW02/pri/act# 
+AMS-EDG-IN-FW02/pri/act# configure terminal
+AMS-EDG-IN-FW02/pri/act(config)# 
+AMS-EDG-IN-FW02/pri/act(config)# terminal width 511
+AMS-EDG-IN-FW02/pri/act(config)# 
+AMS-EDG-IN-FW02/pri/act(config)# end
+AMS-EDG-IN-FW02/pri/act# 
+AMS-EDG-IN-FW02/pri/act# 
+AMS-EDG-IN-FW02/pri/act# 
+AMS-EDG-IN-FW02/pri/act# 
+AMS-EDG-IN-FW02/pri/act# packet-tracer input low_sec_nonlb_prod tcp 10.99.211.53 12345 10.99.4.184 80,443
+                                                                                                     ^
+ERROR: % Invalid input detected at '^' marker.
+AMS-EDG-IN-FW02/pri/act# 
+AMS-EDG-IN-FW02/pri/act# exit

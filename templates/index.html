@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Comp</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 10px;
+    }
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+    .section-title {
+      font-weight: bold;
+      margin-top: 10px;
+      text-transform: uppercase;
+      color: #000;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px;
+      background: #e9f5ff;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    .section-title i {
+      transition: transform 0.3s ease-in-out;
+    }
+    .form-group {
+      display: none;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: center;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #f9f9f9;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      min-width: 120px;
+      font-size: 0.9rem;
+    }
+    .form-group textarea {
+      height: 50px;
+      resize: vertical;
+    }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin: 15px 0;
+    }
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      min-width: 120px;
+      transition: opacity 0.3s;
+    }
+    .build-batch { background: #28a745; color: black; }
+    .final-execute { background: #ec19b0; color: rgb(0, 0, 0); }
+    .packet-tracer { background: #17a2b8; color: rgb(0, 0, 0); }
+    .packet-capture { background: #ffc107; color: black; }
+    .arp { background: #dc3545; color: rgb(5, 4, 4); }
+    button:hover {
+      opacity: 0.8;
+    }
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 15px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+      font-size: 0.9rem;
+    }
+    td[data-action="Added to queue"] {
+      background-color: lightyellow;
+    }
+    td[data-action=Connected] {
+      background-color: lightblue;
+    }
+    td form {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    td input[type="text"], td input[type="date"], td select {
+      padding: 5px;
+      font-size: 0.85rem;
+      width: 100px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    td button {
+      padding: 5px 8px;
+      font-size: 0.85rem;
+      min-width: auto;
+    }
+    /* Delete button style */
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+      padding: 5px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: none; /* Hidden by default */
+    }
+    .delete-btn.visible {
+      display: inline-block; /* Shown when status is Cancelled */
+    }
+    /* Spinner Styles */
+    .spinner-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .spinner-text {
+      color: white;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    /* Modal (Pop-up) Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1001;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 1100px;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .modal-content h3 {
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+    .modal-content table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .modal-content th, .modal-content td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .modal-content th {
+      background-color: #007bff;
+      color: white;
+    }
+    .filter-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .filter-group label {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    .filter-group select {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .row-count {
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: #333;
+      font-weight: bold;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #333;
+    }
+    @media (max-width: 1024px) {
+      .container {
+        max-width: 90%;
+        padding: 10px;
+      }
+      .form-group input, .form-group select, .form-group textarea {
+        min-width: 100%;
+      }
+      button {
+        min-width: 100%;
+      }
+      td input[type="text"], td input[type="date"], td select {
+        width: 80px;
+      }
+      .modal-content table {
+        font-size: 0.75rem;
+      }
+    }
+    @media (max-width: 768px) {
+      h2 {
+        font-size: 1.2rem;
+      }
+      .section-title {
+        font-size: 0.9rem;
+      }
+      .form-group {
+        flex-direction: column;
+      }
+      .buttons {
+        flex-direction: column;
+      }
+      table {
+        font-size: 0.75rem;
+      }
+      th, td {
+        padding: 6px;
+      }
+      td form {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      td input[type="text"], td input[type="date"], td select {
+        width: 100%;
+      }
+      td button {
+        width: 100%;
+      }
+      .modal-content {
+        width: 95%;
+        padding: 15px;
+      }
+      .modal-content table {
+        font-size: 0.65rem;
+      }
+      .filter-group {
+        flex-direction: column;
+        gap: 5px;
+      }
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 8px;
+      }
+      th, td {
+        font-size: 0.7rem;
+        padding: 4px;
+      }
+      .section-title {
+        font-size: 0.8rem;
+      }
+      button {
+        font-size: 0.8rem;
+        padding: 6px;
+      }
+      .spinner-text {
+        font-size: 1rem;
+      }
+      .modal-content {
+        padding: 10px;
+      }
+      .modal-content h3 {
+        font-size: 1rem;
+      }
+    }
+    .auto-style1 {
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <!-- Spinner Overlay -->
+  <div class="spinner-overlay" id="spinnerOverlay">
+    <div style="display: flex; align-items: center;">
+      <div class="spinner"></div>
+      <span class="spinner-text">Work in progress</span>
+    </div>
+  </div>
+
+  <!-- Modal (Pop-up) -->
+  <div class="modal" id="rulesModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">×</span>
+      <h3>Processed Rules for ITSR Number(s): <span id="modalItsrNumber"></span></h3>
+      <div class="filter-group">
+        <div>
+          <label for="inlineFilter">Filter by Inline:</label>
+          <select id="inlineFilter">
+            <option value="All">All</option>
+            <option value="inline">inline</option>
+            <option value="not inline">not inline</option>
+          </select>
+        </div>
+        <div>
+          <label for="actionFilter">Filter by Action:</label>
+          <select id="actionFilter">
+            <option value="All">All</option>
+            <!-- Options will be populated dynamically -->
+          </select>
+        </div>
+      </div>
+      <div class="row-count" id="rowCount">Rows: 0</div>
+      <table id="modalRulesTable">
+        <thead>
+          <tr>
+            <th>ITSR Number</th>
+            <th>Source IP</th>
+            <th>Destination IP</th>
+            <th>Multiple Ports</th>
+            <th>Firewall</th>
+            <th>Inline</th>
+            <th>Action</th>
+            <th>Pre Status</th>
+            <th>Post Status</th>
+            <th>Post Action</th>
+            <th>Post Reason</th>
+            <th>Risk Description</th>
+          </tr>
+        </thead>
+        <tbody id="modalRulesBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2 class="auto-style1">Secur Comp</h2>
+   
+    <!-- ITSR Details Section -->
+    <div class="section-title" onclick="toggleSection(this)">ITSR Details <i class="fas fa-chevron-right"></i></div>
+    <div class="form-group">
+      <input type="text" id="itsr-number" placeholder="ITSR Number" />
+      <input type="text" placeholder="Requestor Team DL Email">
+    </div>
+
+    <!-- Firewall Section -->
+    <div class="section-title" onclick="toggleSection(this)">Firewall <i class="fas fa-chevron-right"></i></div>
+    <div class="form-group">
+      <textarea id="source-ip" placeholder="Source IPs or Subnets"></textarea>
+      <textarea id="dest-ip" placeholder="Destination IPs or Subnets"></textarea>
+      <select id="firewall">
+        <option value="None">Select Firewall</option>
+        {% for fw in firewalls %}
+          <option value="{{ fw.firewall_hostname }}">{{ fw.firewall_hostname }}</option>
+        {% endfor %}
+      </select>
+      <select id="context">
+        <option value="">Select Context</option>
+      </select>
+    </div>
+
+    <!-- Ports & Protocol Section -->
+    <div class="section-title" onclick="toggleSection(this)">Ports & Protocol <i class="fas fa-chevron-right"></i></div>
+    <div class="form-group">
+      <input type="text" id="multiple-ports" placeholder="Multiple Ports (comma separated)">
+      <input type="number" id="port-range-start" placeholder="Start Port">
+      <input type="number" id="port-range-end" placeholder="End Port">
+      <select id="protocol">
+          <option value="">Protocol</option>
+          <option>TCP</option>
+          <option>UDP</option>
+      </select>
+    </div>
+
+    <div class="buttons">
+      <button class="build-batch">Due-Diligence</button>
+      <button id="final-execute-btn">Final Execute</button>
+      <button class="packet-tracer">Packet Tracer</button>
+      <button class="packet-capture">Packet Capture</button>
+      <button class="arp">ARP</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>ITSR Number</th>
+            <th>Email</th>
+            <th>Source IP</th>
+            <th>Destination IP</th>
+            <th>Port Range</th>
+            <th>Protocol</th>
+            <th>Firewall</th>
+            <th>Action</th>
+            <th>Status</th>
+            <th>Risk Description</th>
+            <th>Security Exception Number</th>
+            <th>Security Exception Expiry</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rule in rules %}
+          <tr>
+            <td>CISCO</td>
+            <td>{{ rule.itsr_number }}</td>
+            <td>{{ rule.email }}</td>
+            <td>{{ rule.source_ip }}</td>
+            <td>{{ rule.dest_ip }}</td>
+            <td>{{ rule.port_range_start }} - {{ rule.port_range_end }}</td>
+            <td>{{ rule.protocol }}</td>
+            <td>{{ rule.Firewall }}</td>
+            <td>{{ rule.pre_status }}</td>
+            <td data-status="{{ rule.final_status }}">
+              <select class="status-select" 
+                      data-itsr-number="{{ rule.itsr_number }}" 
+                      data-source-ip="{{ rule.source_ip }}" 
+                      data-dest-ip="{{ rule.dest_ip }}">
+                <option value="Pending" {% if rule.final_status == "Pending" %}selected{% endif %}>Pending</option>
+                <option value="Cancelled" {% if rule.final_status == "Cancelled" %}selected{% endif %}>Cancelled</option>
+              </select>
+              <button class="delete-btn {% if rule.final_status == 'Cancelled' %}visible{% endif %}" 
+                      data-itsr-number="{{ rule.itsr_number }}" 
+                      data-source-ip="{{ rule.source_ip }}" 
+                      data-dest-ip="{{ rule.dest_ip }}">Delete</button>
+            </td>
+            <td>{{ rule.matched_Risk_Description }}</td>
+            <td>
+              <form class="update-form" data-field="security_exception_number">
+                <input type="hidden" name="itsr_number" value="{{ rule.itsr_number }}">
+                <input type="hidden" name="source_ip" value="{{ rule.source_ip }}">
+                <input type="hidden" name="dest_ip" value="{{ rule.dest_ip }}">
+                <input type="text" name="security_exception_number" placeholder="Exception Number" value="{{ rule.Security_Exception_number or '' }}">
+                <button type="submit">Modify</button>
+              </form>
+            </td>
+            <td>
+              <form class="update-form" data-field="security_exception_expiry_date">
+                <input type="hidden" name="itsr_number" value="{{ rule.itsr_number }}">
+                <input type="hidden" name="source_ip" value="{{ rule.source_ip }}">
+                <input type="hidden" name="dest_ip" value="{{ rule.dest_ip }}">
+                <input type="date" name="security_exception_expiry_date" placeholder="Expiry Date" value="{{ rule.Security_Exception_expiry_date or '' }}">
+                <button type="submit">Modify</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    // Safely parse firewall-context mapping from backend
+    let firewallContexts;
+    try {
+      firewallContexts = JSON.parse('{{ firewalls | tojson | safe }}');
+      console.log("Firewall Contexts:", firewallContexts);
+    } catch (e) {
+      console.error("Error parsing firewallContexts:", e);
+      firewallContexts = [];
+    }
+
+    // Store all rules globally for filtering
+    let allRules = [];
+
+    // Spinner Functions
+    function showSpinner() {
+      document.getElementById('spinnerOverlay').style.display = 'flex';
+    }
+
+    function hideSpinner() {
+      document.getElementById('spinnerOverlay').style.display = 'none';
+    }
+
+    // Modal Functions
+    function openModal() {
+      document.getElementById('rulesModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('rulesModal').style.display = 'none';
+      location.reload();
+    }
+
+    function renderRules(rules) {
+      const tbody = document.getElementById('modalRulesBody');
+      tbody.innerHTML = ''; // Clear previous content
+
+      if (!rules || rules.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="12">No matching rules found.</td>`;
+        tbody.appendChild(row);
+        document.getElementById('rowCount').textContent = 'Rows: 0';
+        return;
+      }
+
+      rules.forEach(rule => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${rule.itsr_number || ''}</td>
+          <td>${rule.source_ip || ''}</td>
+          <td>${rule.dest_ip || ''}</td>
+          <td>${rule.multiple_ports || ''}</td>
+          <td>${rule.Firewall || ''}</td>
+          <td>${rule.inLine || ''}</td>
+          <td>${rule.Action || ''}</td>
+          <td>${rule.pre_status || ''}</td>
+          <td>${rule.post_status || ''}</td>
+          <td>${rule.post_action || ''}</td>
+          <td>${rule.post_reason || ''}</td>
+          <td>${rule.matched_Risk_Description || ''}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // Update row count
+      document.getElementById('rowCount').textContent = `Rows: ${rules.length}`;
+    }
+
+    function applyFilters() {
+      const inlineFilter = document.getElementById('inlineFilter').value;
+      const actionFilter = document.getElementById('actionFilter').value;
+
+      const filteredRules = allRules.filter(rule => {
+        const matchesInline = inlineFilter === 'All' || (rule.inLine || '') === inlineFilter;
+        const matchesAction = actionFilter === 'All' || (rule.Action || '') === actionFilter;
+        return matchesInline && matchesAction;
+      });
+
+      renderRules(filteredRules);
+    }
+
+    async function populateModal(itsrNumbers) {
+      allRules = []; // Reset global rules array
+      const tbody = document.getElementById('modalRulesBody');
+      tbody.innerHTML = ''; // Clear previous content
+
+      if (!itsrNumbers || itsrNumbers.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="12">No rules were processed.</td>`;
+        tbody.appendChild(row);
+        document.getElementById('rowCount').textContent = 'Rows: 0';
+        return;
+      }
+
+      document.getElementById('modalItsrNumber').textContent = itsrNumbers.join(', ');
+
+      // Fetch rules for each itsr_number
+      for (const itsrNumber of itsrNumbers) {
+        try {
+          const rulesResponse = await fetch(`/get-rules/${itsrNumber}`);
+          const rulesData = await rulesResponse.json();
+          if (rulesResponse.ok && rulesData.rules && rulesData.rules.length > 0) {
+            allRules.push(...rulesData.rules);
+          } else {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="12">No rules found for ITSR Number: ${itsrNumber}</td>`;
+            tbody.appendChild(row);
+          }
+        } catch (error) {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td colspan="12">Error fetching rules for ITSR Number: ${itsrNumber} - ${error.message}</td>`;
+          tbody.appendChild(row);
+        }
+      }
+
+      // Populate the action filter dropdown with unique values
+      const actionFilter = document.getElementById('actionFilter');
+      actionFilter.innerHTML = '<option value="All">All</option>'; // Reset options
+      const uniqueActions = [...new Set(allRules.map(rule => rule.Action || ''))].filter(action => action !== '');
+      uniqueActions.forEach(action => {
+        const option = document.createElement('option');
+        option.value = action;
+        option.textContent = action;
+        actionFilter.appendChild(option);
+      });
+
+      // Render all rules initially
+      renderRules(allRules);
+
+      // Add event listeners for filters
+      document.getElementById('inlineFilter').addEventListener('change', applyFilters);
+      document.getElementById('actionFilter').addEventListener('change', applyFilters);
+    }
+
+    function toggleSection(section) {
+      const formGroup = section.nextElementSibling;
+      const icon = section.querySelector("i");
+      const isVisible = formGroup.style.display === 'flex';
+      formGroup.style.display = isVisible ? 'none' : 'flex';
+      icon.style.transform = isVisible ? 'rotate(0deg)' : 'rotate(90deg)';
+    }
+
+    function populateContextDropdown() {
+      const firewallSelect = document.getElementById('firewall');
+      const contextSelect = document.getElementById('context');
+
+      firewallSelect.addEventListener('change', () => {
+        const selectedFirewall = firewallSelect.value;
+        contextSelect.innerHTML = '<option value="">Select Context</option>';
+
+        if (selectedFirewall !== 'None') {
+          const firewall = firewallContexts.find(fw => fw.firewall_hostname === selectedFirewall);
+          if (firewall && Array.isArray(firewall.context_names)) {
+            firewall.context_names.forEach(context => {
+              if (context) {
+                const option = document.createElement('option');
+                option.value = context;
+                option.text = context;
+                contextSelect.appendChild(option);
+              }
+            });
+          } else {
+            console.warn(`No valid context_names found for firewall: ${selectedFirewall}`);
+          }
+        }
+      });
+    }
+
+    populateContextDropdown();
+
+    async function submitForm() {
+      showSpinner();
+      try {
+        const itsrNumber = document.getElementById('itsr-number').value;
+        const email = document.querySelector('input[placeholder="Requestor Team DL Email"]').value;
+        const sourceIP = document.getElementById('source-ip').value;
+        const destinationIP = document.getElementById('dest-ip').value;
+        const proto = document.getElementById('protocol').value;
+        const multiplePorts = document.getElementById('multiple-ports').value;
+        const portRangeStart = document.getElementById('port-range-start').value;
+        const portRangeEnd = document.getElementById('port-range-end').value;
+        const portsNumeric = parseInt(portRangeStart, 10) || 0;
+
+        const firewall = document.getElementById('firewall').value;
+        const context = document.getElementById('context').value;
+
+        const formData = {
+          itsr_number: itsrNumber,
+          email: email,
+          source_ip: sourceIP,
+          dest_ip: destinationIP,
+          multiple_ports: multiplePorts,
+          port_range_start: portRangeStart,
+          port_range_end: portRangeEnd,
+          protocol: proto,
+          ports: portsNumeric,
+          Firewall: firewall,
+          context: context,
+          pre_status: "Added to queue",
+          post_status: "Pending",
+          final_status: "Pending"
+        };
+
+        const response = await fetch('/submit-rule', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(formData).toString()
+        });
+
+        if (response.ok) {
+          alert('Rule submitted!');
+          window.location.reload();
+        } else {
+          const err = await response.json();
+          alert('Error: ' + err.detail);
+        }
+      } catch (error) {
+        alert('Network error: ' + error.message);
+      } finally {
+        hideSpinner();
+      }
+    }
+
+    document.querySelector('.build-batch').addEventListener('click', submitForm);
+
+    async function submitFinalExecute() {
+      showSpinner();
+      try {
+        const response = await fetch('/final_execute', {
+          method: 'POST'
+        });
+        if (response.ok) {
+          const result = await response.json();
+          alert(result.message);
+
+          // Use the processed_itsr_numbers from the response to fetch rules
+          const itsrNumbers = result.processed_itsr_numbers || [];
+          await populateModal(itsrNumbers);
+          openModal();
+        } else {
+          const err = await response.json();
+          alert("Error: " + err.detail);
+        }
+      } catch (error) {
+        alert('Network error: ' + error.message);
+      } finally {
+        hideSpinner();
+      }
+    }
+
+    document.getElementById('final-execute-btn').addEventListener('click', submitFinalExecute);
+
+    document.querySelectorAll('.update-form').forEach(form => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const field = form.dataset.field;
+        const data = {
+          itsr_number: formData.get('itsr_number'),
+          source_ip: formData.get('source_ip'),
+          dest_ip: formData.get('dest_ip'),
+          [field]: formData.get(field)
+        };
+
+        try {
+          const response = await fetch('/update-rule', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(data).toString()
+          });
+
+          if (response.ok) {
+            alert(`${field.replace('_', ' ')} updated successfully!`);
+            window.location.reload();
+          } else {
+            const err = await response.json();
+            alert('Error: ' + err.detail);
+          }
+        } catch (error) {
+          alert('Network error: ' + error.message);
+        }
+      });
+    });
+
+    // Handle status updates
+    document.querySelectorAll('.status-select').forEach(select => {
+      select.addEventListener('change', async (e) => {
+        const itsrNumber = e.target.dataset.itsrNumber;
+        const sourceIp = e.target.dataset.sourceIp;
+        const destIp = e.target.dataset.destIp;
+        const newStatus = e.target.value;
+
+        try {
+          const response = await fetch('/update-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              itsr_number: itsrNumber,
+              source_ip: sourceIp,
+              dest_ip: destIp,
+              final_status: newStatus
+            }).toString()
+          });
+
+          if (response.ok) {
+            alert(`Status updated to ${newStatus}!`);
+            // Update the data-status attribute
+            e.target.parentElement.setAttribute('data-status', newStatus);
+            // Show or hide the delete button based on the new status
+            const deleteBtn = e.target.parentElement.querySelector('.delete-btn');
+            if (newStatus === 'Cancelled') {
+              deleteBtn.classList.add('visible');
+            } else {
+              deleteBtn.classList.remove('visible');
+            }
+          } else {
+            const err = await response.json();
+            alert('Error: ' + err.detail);
+            // Revert the dropdown to the previous value
+            e.target.value = e.target.dataset.previousValue || 'Pending';
+            // Reset the delete button visibility
+            const deleteBtn = e.target.parentElement.querySelector('.delete-btn');
+            deleteBtn.classList.remove('visible');
+          }
+        } catch (error) {
+          alert('Network error: ' + error.message);
+          // Revert the dropdown to the previous value
+          e.target.value = e.target.dataset.previousValue || 'Pending';
+          // Reset the delete button visibility
+          const deleteBtn = e.target.parentElement.querySelector('.delete-btn');
+          deleteBtn.classList.remove('visible');
+        }
+      });
+
+      // Store the previous value to revert on error
+      select.addEventListener('focus', (e) => {
+        e.target.dataset.previousValue = e.target.value;
+      });
+    });
+
+    // Handle delete button clicks
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const itsrNumber = e.target.dataset.itsrNumber;
+        const sourceIp = e.target.dataset.sourceIp;
+        const destIp = e.target.dataset.destIp;
+
+        try {
+          const response = await fetch('/delete-rule-ui', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              itsr_number: itsrNumber,
+              source_ip: sourceIp,
+              dest_ip: destIp
+            }).toString()
+          });
+
+          if (response.ok) {
+            alert('Row removed from UI!');
+            window.location.reload(); // Refresh the page to remove the row
+          } else {
+            const err = await response.json();
+            alert('Error: ' + err.detail);
+          }
+        } catch (error) {
+          alert('Network error: ' + error.message);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
